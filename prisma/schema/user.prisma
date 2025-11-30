@@ -1,0 +1,66 @@
+enum Role {
+  USER
+  HOST
+  ADMIN
+}
+
+
+model User {
+  id               String     @id @default(cuid())
+  name             String
+  email            String     @unique
+  password         String
+  contactNumber    String?
+  role             Role       @default(USER)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  // events     Event[]    @relation("UserEvents")      // Events created or joined
+  // reviews    Review[]   @relation("UserReviews")     // Reviews given by this user
+  // payments   Payment[]  @relation("UserPayments")    // Payments made by this user
+
+  admin            Admin?
+  profile          Profile?
+
+   @@map("users")
+}
+
+model Profile {
+  id               String   @id @default(cuid())
+  name             String
+  email            String   @unique
+  bio              String?
+  profileImage     String?
+  location         String?
+  isDeleted        Boolean  @default(false)
+  user             User     @relation(fields: [email], references: [email])
+  userId           String?
+  interests        String?
+
+   @@map("profiles")
+}
+
+
+// model Interest {
+//   id              String   @id @default(cuid())
+//   name            String   @unique
+//   profileId       String    
+//   profile         Profile@relation(fields: [profileId], references: [id])
+
+//    @@map("Interests")
+// }
+
+
+model Admin {
+    id            String   @id @default(uuid())
+    name          String
+    email         String   @unique
+    profileImage  String?
+    contactNumber String?
+    isDeleted     Boolean  @default(false)
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+
+    user User @relation(fields: [email], references: [email])
+
+    @@map("admins")
+}
