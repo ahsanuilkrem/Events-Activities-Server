@@ -31,10 +31,11 @@ model Profile {
   bio              String?
   profileImage     String?
   location         String?
+  interests        String?
   isDeleted        Boolean  @default(false)
   user             User     @relation(fields: [email], references: [email])
   userId           String?
-  interests        String?
+ 
 
    @@map("profiles")
 }
