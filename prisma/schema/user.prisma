@@ -14,9 +14,6 @@ model User {
   role             Role       @default(USER)
   createdAt        DateTime   @default(now())
   updatedAt        DateTime   @updatedAt
-  // events     Event[]    @relation("UserEvents")      // Events created or joined
-  // reviews    Review[]   @relation("UserReviews")     // Reviews given by this user
-  // payments   Payment[]  @relation("UserPayments")    // Payments made by this user
 
   admin            Admin?
   profile          Profile?
@@ -31,24 +28,18 @@ model Profile {
   bio              String?
   profileImage     String?
   location         String?
-  interests        String?
+  interests        String[]
   isDeleted        Boolean  @default(false)
   user             User     @relation(fields: [email], references: [email])
-  userId           String?
- 
+  
+  events          Event[]
+  userReviews     Review[] @relation("UserReviews")
+  hostReviews     Review[] @relation("HostReviews")
+  payments        Payment[]
+  eventsJoined    EventParticipant[]
 
    @@map("profiles")
 }
-
-
-// model Interest {
-//   id              String   @id @default(cuid())
-//   name            String   @unique
-//   profileId       String    
-//   profile         Profile@relation(fields: [profileId], references: [id])
-
-//    @@map("Interests")
-// }
 
 
 model Admin {
@@ -61,7 +52,7 @@ model Admin {
     createdAt     DateTime @default(now())
     updatedAt     DateTime @updatedAt
 
-    user User @relation(fields: [email], references: [email])
+    user          User @relation(fields: [email], references: [email])
 
     @@map("admins")
 }

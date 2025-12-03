@@ -1,0 +1,113 @@
+
+
+
+// model User {
+//   id        String     @id @default(uuid())
+//   name      String
+//   email     String     @unique
+//   password  String
+//   bio       String?
+//   image     String?
+//   location  String?
+//   role      Role       @default(USER)
+//   interests String[]
+//   rating    Float      @default(0)
+
+//   eventsJoined   EventParticipant[]
+//   eventsHosted   Event[] @relation("HostedEvents")
+//   reviewsGiven   Review[] @relation("UserReviews")
+//   reviewsAsHost  Review[] @relation("HostReviews")
+
+//   createdAt DateTime @default(now())
+// }
+
+model Event {
+  id               String              @id @default(uuid())
+  EventName        String
+  description      String?
+  image            String?
+  date             DateTime
+  location         String
+  category         String? 
+  minParticipants  Int
+  maxParticipants  Int
+  fee              Float    @default(0)
+  status           EventStatus @default(OPEN)
+
+  hostId           String
+  host             Profile @relation(fields: [hostId], references: [id])
+
+  participants     EventParticipant[]
+  reviews          Review[]
+  payment          Payment[]
+
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+   @@map("Events")
+}
+
+model EventParticipant {
+  id      String @id @default(uuid())
+  userId  String
+  eventId String
+
+  user    Profile  @relation(fields: [userId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, eventId])
+
+}
+
+model Review {
+  id       String @id @default(uuid())
+  rating   Int
+  comment  String?
+
+  userId  String
+  hostId  String
+  eventId String
+
+  user      Profile  @relation("UserReviews", fields: [userId], references: [id])
+  host      Profile  @relation("HostReviews", fields: [hostId], references: [id])
+  event  Event    @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt        DateTime   @updatedAt
+
+   @@map("Reviews")
+}
+
+model Payment {
+  id            String @id @default(uuid())
+  amount        Float
+  paymentGatewayData Json?
+  status        PaymentStatus @default(PENDING)
+  userId        String
+  eventId       String
+  transactionId String?
+
+  user          Profile @relation(fields: [userId], references: [id])
+  event         Event @relation(fields: [eventId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt        DateTime   @updatedAt
+
+   @@map("payments")
+}
+
+enum EventStatus {
+  OPEN
+  FULL
+  CANCELLED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}

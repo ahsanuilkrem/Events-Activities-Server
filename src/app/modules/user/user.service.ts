@@ -123,6 +123,7 @@ const getAllUsers = async (params: any, options: IOptions) => {
 
 
 const UpdateMyProfie = async (user: IAuthUser, req: Request) => {
+    
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,        
