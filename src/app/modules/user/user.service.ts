@@ -153,14 +153,14 @@ const UpdateMyProfie = async (user: IAuthUser, req: Request) => {
             data: req.body
         })
     }
-    // else if (userInfo.role === Role.HOST) {
-    //     profileInfo = await prisma.patient.update({
-    //         where: {
-    //             email: userInfo.email
-    //         },
-    //         data: req.body
-    //     })
-    // }
+    else if (userInfo.role === Role.HOST) {
+        profileInfo = await prisma.profile.update({
+            where: {
+                email: userInfo.email
+            },
+            data: req.body
+        })
+    }
 
     return { ...profileInfo };
 }

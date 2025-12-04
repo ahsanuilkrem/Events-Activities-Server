@@ -19,6 +19,10 @@ router.get("/:id",
     EventController.getEventById 
 );
 
+router.get("/allJoinedEvent", 
+    auth(Role.ADMIN, Role.HOST, Role.USER), 
+    EventController.getAlljoinEvent);
+
 router.post(
     "/create-event",
     auth(Role.ADMIN, Role.HOST),

@@ -265,6 +265,29 @@ const leaveEvent = async (eventId: string, user: IAuthUser) => {
 
   return { message: "Left event successfully" };
 };
+ 
+const getAllJoinedEvents = async (user: IAuthUser) => {
+
+  const userInfo = await prisma.profile.findUniqueOrThrow({
+    where: {
+      email: user?.email,
+    },
+  });
+
+    return prisma.eventParticipant.findMany({
+      where: { userId: userInfo.id },
+      include: {
+        event: {
+          include: {
+            host: true,
+            participants: true,
+          },
+        },
+      },
+     
+    });
+  
+};
 
 
 //   // Delete Event (Host only)
@@ -294,6 +317,7 @@ export const EventService = {
   getEventById,
   joinEvent,
   leaveEvent,
+  getAllJoinedEvents,
   deleteEvent,
 
 }

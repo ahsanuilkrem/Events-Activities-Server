@@ -88,6 +88,18 @@ const leaveEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: R
   }
 );
 
+const getAlljoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;  // From JWT auth
+    const participant = await EventService.getAllJoinedEvents( user as IAuthUser );
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "all join event successfully",
+      data: participant,
+    });
+  }
+);
+
 // Delete event (host only)
 const deleteEvent = catchAsync(async (req:Request & {user?: IAuthUser}, res: Response) => {
     const { id } = req.params;
@@ -111,6 +123,7 @@ export const EventController = {
          getEventById,
          joinEvent,
          leaveEvent,
+         getAlljoinEvent,
          deleteEvent,
 
 }

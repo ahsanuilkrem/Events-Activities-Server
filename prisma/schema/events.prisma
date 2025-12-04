@@ -48,15 +48,18 @@ model Event {
 }
 
 model EventParticipant {
-  id      String @id @default(uuid())
-  userId  String
-  eventId String
+  id          String @id @default(uuid())
+  userId      String
+  eventId     String
+  status      PaymentStatus @default(PENDING)
 
-  user    Profile  @relation(fields: [userId], references: [id])
-  event   Event  @relation(fields: [eventId], references: [id])
+  user        Profile  @relation(fields: [userId], references: [id])
+  event       Event  @relation(fields: [eventId], references: [id])
 
   createdAt    DateTime @default(now())
   updatedAt    DateTime   @updatedAt
+  payment      Payment?
+  reviews      Review?
 
   @@unique([userId, eventId])
 
@@ -73,7 +76,7 @@ model Review {
 
   user      Profile  @relation("UserReviews", fields: [userId], references: [id])
   host      Profile  @relation("HostReviews", fields: [hostId], references: [id])
-  event  Event    @relation(fields: [eventId], references: [id])
+  event     Event    @relation(fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt        DateTime   @updatedAt
@@ -83,12 +86,12 @@ model Review {
 
 model Payment {
   id            String @id @default(uuid())
-  amount        Float
-  paymentGatewayData Json?
-  status        PaymentStatus @default(PENDING)
   userId        String
   eventId       String
   transactionId String?
+  amount        Float
+  paymentGatewayData Json?
+  status        PaymentStatus @default(PENDING)
 
   user          Profile @relation(fields: [userId], references: [id])
   event         Event @relation(fields: [eventId], references: [id])
