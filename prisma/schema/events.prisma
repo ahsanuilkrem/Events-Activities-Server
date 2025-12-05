@@ -59,7 +59,8 @@ model EventParticipant {
   createdAt    DateTime @default(now())
   updatedAt    DateTime   @updatedAt
   payment      Payment?
-  reviews      Review?
+
+
 
   @@unique([userId, eventId])
 
@@ -95,6 +96,8 @@ model Payment {
 
   user          Profile @relation(fields: [userId], references: [id])
   event         Event @relation(fields: [eventId], references: [id])
+  joinEventId   String @unique
+  joinEvent     EventParticipant @relation(fields: [joinEventId], references: [id])
 
   createdAt     DateTime @default(now())
   updatedAt        DateTime   @updatedAt

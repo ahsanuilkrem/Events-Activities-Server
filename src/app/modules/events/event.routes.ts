@@ -19,10 +19,6 @@ router.get("/:id",
     EventController.getEventById 
 );
 
-router.get("/allJoinedEvent", 
-    auth(Role.ADMIN, Role.HOST, Role.USER), 
-    EventController.getAlljoinEvent);
-
 router.post(
     "/create-event",
     auth(Role.ADMIN, Role.HOST),
@@ -32,16 +28,6 @@ router.post(
         return EventController.createEvent(req, res, next)
     }  
 )
-
-router.post("/:id/join", 
-    auth(Role.USER, Role.HOST, Role.ADMIN),
-    EventController.joinEvent    
-);
-
-router.delete("/:id/leave", 
-    auth(Role.USER, Role.HOST, Role.ADMIN),
-    EventController.leaveEvent    
-);
 
 router.delete("/:id", 
     auth(Role.HOST, Role.ADMIN),
@@ -57,6 +43,29 @@ router.patch(
         return EventController.updateEvent(req, res, next)
     }
 );
+
+
+// All users join event
+
+// router.get("/allJoinedEvent", 
+//     auth(Role.ADMIN, Role.HOST, Role.USER), 
+//     EventController.getAlljoinEvent);
+
+router.post("/:id/join", 
+    auth(Role.USER, Role.HOST, Role.ADMIN),
+    EventController.joinEvent    
+);
+
+router.get(
+    '/my-event',
+    auth(Role.USER),
+    EventController.getMyUserJoinEvent
+)
+
+router.delete("/:id/leave", 
+    auth(Role.USER, Role.HOST, Role.ADMIN),
+    EventController.leaveEvent    
+); 
 
 
 
