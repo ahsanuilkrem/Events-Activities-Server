@@ -5,10 +5,10 @@ import { AuthController } from './auth.controller';
 
 const router = express.Router();
 
-// router.get(
-//     '/me',
-//     AuthController.getMe
-// )
+router.get(
+    '/me',
+    AuthController.getMe
+)
 
 router.post(
     "/login",

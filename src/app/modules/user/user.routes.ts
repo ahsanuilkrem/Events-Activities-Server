@@ -5,6 +5,7 @@ import { fileUploader } from '../../helper/fileUploader';
 import { UserValidation } from './user.validation';
 import auth from '../../middlewares/auth';
 import { Role } from '@prisma/client';
+import validateRequest from '../../middlewares/validateRequest';
 
 const router = express.Router();
 
@@ -47,6 +48,13 @@ router.patch(
         req.body = JSON.parse(req.body.data)
         return UserController.UpdateMyProfie(req, res, next)
     }
+);
+
+router.patch(
+    '/:id/status',
+    auth(Role.ADMIN),
+    validateRequest(UserValidation.updateStatus),
+    UserController.changeProfileStatus
 );
 
 export const userRoutes = router;

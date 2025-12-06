@@ -1,26 +1,5 @@
 
 
-
-// model User {
-//   id        String     @id @default(uuid())
-//   name      String
-//   email     String     @unique
-//   password  String
-//   bio       String?
-//   image     String?
-//   location  String?
-//   role      Role       @default(USER)
-//   interests String[]
-//   rating    Float      @default(0)
-
-//   eventsJoined   EventParticipant[]
-//   eventsHosted   Event[] @relation("HostedEvents")
-//   reviewsGiven   Review[] @relation("UserReviews")
-//   reviewsAsHost  Review[] @relation("HostReviews")
-
-//   createdAt DateTime @default(now())
-// }
-
 model Event {
   id               String              @id @default(uuid())
   EventName        String
@@ -33,6 +12,7 @@ model Event {
   maxParticipants  Int
   fee              Float    @default(0)
   status           EventStatus @default(OPEN)
+  averageRating    Float @default(0.0)
 
   hostId           String
   host             Profile @relation(fields: [hostId], references: [id])
@@ -59,25 +39,28 @@ model EventParticipant {
   createdAt    DateTime @default(now())
   updatedAt    DateTime   @updatedAt
   payment      Payment?
-
+  review       Review?
 
 
   @@unique([userId, eventId])
+  @@map("JoinEvent")
 
 }
 
 model Review {
-  id       String @id @default(uuid())
-  rating   Int
-  comment  String?
+  id          String @id @default(uuid())
+  rating      Int
+  comment     String?
 
-  userId  String
-  hostId  String
-  eventId String
+  userId      String?
+  hostId      String?
+  eventId     String?
+  joinEventId String  @unique
 
-  user      Profile  @relation("UserReviews", fields: [userId], references: [id])
-  host      Profile  @relation("HostReviews", fields: [hostId], references: [id])
-  event     Event    @relation(fields: [eventId], references: [id])
+  user        Profile  @relation("UserReviews", fields: [userId], references: [id])
+  host        Profile  @relation("HostReviews", fields: [hostId], references: [id])
+  event       Event    @relation(fields: [eventId], references: [id])
+  joinEvent   EventParticipant @relation(fields: [joinEventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt        DateTime   @updatedAt

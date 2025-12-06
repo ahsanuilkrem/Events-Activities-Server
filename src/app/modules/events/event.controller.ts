@@ -6,6 +6,7 @@ import httpStatus from 'http-status';
 import { EventService } from "./event.service";
 import { IAuthUser } from "../../type/role";
 import { EventFilterableFields } from "./event.constant";
+import { stripe } from './../../helper/stripe';
 
 
 const createEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
@@ -117,41 +118,35 @@ const leaveEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: R
 // }
 // );
 
+const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+  const userId = req.params.id;
+  console.log(userId)
+  const result = await EventService.getMyUserJoinEvent(userId )
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'My join Event retrive successfully',
+     data: result
+  });
+});
+
 // const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
 //   const user = req.user;
 //   console.log(user)
-//   // const filters = pick(req.query, ['status', 'paymentStatus']);
-//   // const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+//   const filters = pick(req.query, ['status']);
+//   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
 
-//   const result = await EventService.getMyUserJoinEvent(user as IAuthUser);
+//   const result = await EventService.getMyUserJoinEvent(user as IAuthUser, filters, options);
 
 //   sendResponse(res, {
 //     statusCode: httpStatus.OK,
 //     success: true,
 //     message: 'My Event retrive successfully',
-//     // meta: result.meta,
+//     meta: result.meta,
 //     data: result.data,
    
 //   });
 // });
-
-const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
-  const user = req.user;
-  console.log(user)
-  const filters = pick(req.query, ['status']);
-  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
-
-  const result = await EventService.getMyUserJoinEvent(user as IAuthUser, filters, options);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'My Event retrive successfully',
-    meta: result.meta,
-    data: result.data,
-   
-  });
-});
 
 
 

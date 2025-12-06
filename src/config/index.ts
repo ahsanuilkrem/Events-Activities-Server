@@ -17,6 +17,11 @@ export default {
         reset_pass_secret: process.env.RESET_PASS_TOKEN,
         reset_pass_token_expires_in: process.env.RESET_PASS_TOKEN_EXPIRES_IN
     },
+    reset_pass_link: process.env.RESET_PASS_LINK,
+      emailSender: {
+        email: process.env.EMAIL,
+        app_pass: process.env.APP_PASS
+    },
     cloudinary: {
         api_secret: process.env.CLOUDINARY_API_SECRET,
         cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

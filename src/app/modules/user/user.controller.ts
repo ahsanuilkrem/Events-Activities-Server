@@ -59,7 +59,7 @@ const UpdateMyProfie = catchAsync(async (req: Request & { user?: IAuthUser }, re
 const getMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
 
     const user = req.user;
-console.log(user)
+    console.log(user)
     const result = await UserService.getMyProfile(user as IAuthUser);
 
     sendResponse(res, {
@@ -70,11 +70,25 @@ console.log(user)
     })
 });
 
+const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
+
+    const { id } = req.params;
+    const result = await UserService.changeProfileStatus(id, req.body)
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Users profile status changed!",
+        data: result
+    })
+});
+
 export const UserController = {
     createUser,
     createAdmin,
     getAllUsers,
     UpdateMyProfie,
     getMyProfile,
+    changeProfileStatus,
 }
 

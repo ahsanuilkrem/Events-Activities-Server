@@ -3,33 +3,33 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../../config/prisma";
 import { Request } from "express";
 import { fileUploader } from "../../helper/fileUploader";
-import { Admin, Prisma, Role } from "@prisma/client";
+import { Admin, Prisma, Role, UserStatus } from "@prisma/client";
 import { IOptions, paginationHelper } from "../../helper/paginationHelper";
 import { userSearchableFields } from "./user.constant";
 import { IAuthUser } from "../../type/role";
 
 const cerateUser = async (req: Request) => {
 
-  if (req.file) {
-    const uploadResult = await fileUploader.uploadToCloudinary(req.file)
-    // console.log("upload file", uploadResult)
-    req.body.profile.profileImage = uploadResult?.secure_url
-  }
-  const hashPassword = await bcrypt.hash(req.body.password, 10)
+    if (req.file) {
+        const uploadResult = await fileUploader.uploadToCloudinary(req.file)
+        // console.log("upload file", uploadResult)
+        req.body.profile.profileImage = uploadResult?.secure_url
+    }
+    const hashPassword = await bcrypt.hash(req.body.password, 10)
 
-  const result = await prisma.$transaction(async (tnx) => {
-    await tnx.user.create({
-      data: {
-        name: req.body.profile.name,
-        email: req.body.profile.email,
-        password: hashPassword
-      }
-    });
-    return await tnx.profile.create({
-      data: req.body.profile
+    const result = await prisma.$transaction(async (tnx) => {
+        await tnx.user.create({
+            data: {
+                name: req.body.profile.name,
+                email: req.body.profile.email,
+                password: hashPassword
+            }
+        });
+        return await tnx.profile.create({
+            data: req.body.profile
+        })
     })
-  })
-  return result;
+    return result;
 
 }
 
@@ -71,7 +71,7 @@ const getAllUsers = async (params: any, options: IOptions) => {
     const { page, limit, skip, sortBy, sortOrder } = paginationHelper.calculatePagination(options)
     const { searchTerm, ...filterData } = params;
 
-     const andConditions: Prisma.UserWhereInput[] = []
+    const andConditions: Prisma.UserWhereInput[] = []
 
     if (searchTerm) {
         andConditions.push({
@@ -109,7 +109,7 @@ const getAllUsers = async (params: any, options: IOptions) => {
     });
 
     const total = await prisma.user.count({
-         where: whereConditions
+        where: whereConditions
     });
     return {
         meta: {
@@ -123,10 +123,10 @@ const getAllUsers = async (params: any, options: IOptions) => {
 
 
 const UpdateMyProfie = async (user: IAuthUser, req: Request) => {
-    
+
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
-            email: user?.email,        
+            email: user?.email,
         }
     });
     const file = req.file;
@@ -170,20 +170,15 @@ const getMyProfile = async (user: IAuthUser) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,
-           
-        },
-        select: {
-            id: true,
-            email: true,
-            role: true,
-            
-        }
+            status: UserStatus.ACTIVE
+
+        },  
     });
 
     let profileInfo;
 
     if (userInfo.role === Role.ADMIN) {
-        profileInfo = await prisma.admin.findUnique({
+        profileInfo = await prisma.profile.findUnique({
             where: {
                 email: userInfo.email
             }
@@ -201,22 +196,39 @@ const getMyProfile = async (user: IAuthUser) => {
             where: {
                 email: userInfo.email
             }
-       })
-    } 
- 
-
+        })
+    }
     return { ...userInfo, ...profileInfo };
+};
+
+const changeProfileStatus = async (id: string, status: UserStatus) => {
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            id
+        }
+    });
+
+    const updateUserStatus = await prisma.user.update({
+        where: {
+            id
+        },
+        data: status
+    });
+
+    return updateUserStatus;
 };
 
 
 export const UserService = {
-  cerateUser,
-  createAdmin,
-  getAllUsers,
-  UpdateMyProfie,
-  getMyProfile,
+    cerateUser,
+    createAdmin,
+    getAllUsers,
+    UpdateMyProfie,
+    getMyProfile,
+    changeProfileStatus,
 
 }
+
 
 
 

@@ -15,7 +15,7 @@ router.get(
 )
 
 router.get("/:id", 
-    auth(Role.HOST, Role.ADMIN),
+    auth(Role.HOST, Role.ADMIN, Role.USER),
     EventController.getEventById 
 );
 
@@ -57,8 +57,8 @@ router.post("/:id/join",
 );
 
 router.get(
-    '/my-event',
-    auth(Role.USER),
+    '/:id/my-event',
+    auth(Role.HOST, Role.USER),
     EventController.getMyUserJoinEvent
 )
 

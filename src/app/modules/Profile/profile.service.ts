@@ -81,7 +81,22 @@ const getByIdFromDB = async (id: string): Promise<Profile | null> => {
             id,
             isDeleted: false,
         },
-   
+        include: {
+            eventsJoined: true,
+            payments: {
+                select: {
+                    id: true,
+                    userId: true,
+                    eventId: true,
+                    transactionId: true,
+                    amount: true,
+                    status: true,
+                    createdAt: true,
+                    updatedAt: true,
+                }
+            }
+        }
+
     });
 
     return result;
@@ -91,14 +106,14 @@ const profileDelete = async (id: string): Promise<Profile | null> => {
     return await prisma.$transaction(async transactionClient => {
         const deletedProfile = await transactionClient.profile.delete({
             where: { id },
-          
+
         });
 
         await transactionClient.user.delete({
             where: {
                 email: deletedProfile.email,
             },
-           
+
         });
 
         return deletedProfile;
@@ -118,9 +133,9 @@ const softDelete = async (id: string): Promise<Profile | null> => {
             where: {
                 email: deletedProfile.email,
             },
-             data: {
+            data: {
                 // status: UserStatus.DELETED,
-            }, 
+            },
         });
 
         return deletedProfile;
@@ -129,11 +144,11 @@ const softDelete = async (id: string): Promise<Profile | null> => {
 
 const updateProfile = async (user: IAuthUser, req: Request) => {
 
-     const file = req.file;
-       if (file) {
-           const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
-           req.body.profileImage = uploadToCloudinary?.secure_url;
-       }
+    const file = req.file;
+    if (file) {
+        const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
+        req.body.profileImage = uploadToCloudinary?.secure_url;
+    }
 
     const profileInfo = await prisma.profile.findUniqueOrThrow({
         where: {
@@ -143,7 +158,7 @@ const updateProfile = async (user: IAuthUser, req: Request) => {
     });
 
     return await prisma.$transaction(async (tnx) => {
-      const result = await tnx.profile.update({
+        const result = await tnx.profile.update({
             where: {
                 id: profileInfo.id
             },
