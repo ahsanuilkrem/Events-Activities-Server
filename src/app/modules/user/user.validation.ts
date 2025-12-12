@@ -3,6 +3,7 @@ import z from "zod";
 
 const createUserValidation = z.object({
     password: z.string(),
+    contactNumber: z.string(),
     profile: z.object({
         email: z.email({
             error: "Email is required!"
@@ -10,11 +11,10 @@ const createUserValidation = z.object({
         name: z.string({
             error: "Name is required!"
         }),
-        location: z.string({
-            error: "Address is required"
-        }).optional()
+        location: z.string().optional()
     })
 });
+
 
 const createAdmin = z.object({
     password: z.string({
@@ -27,9 +27,7 @@ const createAdmin = z.object({
         email: z.string({
             error: "Email is required!"
         }),
-        contactNumber: z.string({
-            error: "Contact Number is required!"
-        }).optional()
+        contactNumber: z.string().optional()
     })
 });
 

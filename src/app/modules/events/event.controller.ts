@@ -35,6 +35,21 @@ const getAllEvents = catchAsync(async (req: Request, res: Response) => {
   })
 })
 
+const getMyEvents = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+  const filters = pick(req.query, EventFilterableFields) // searching , filtering
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]) // pagination and sorting
+  const user = req.user;
+
+  const result = await EventService.getMyEvents(filters, options, user as IAuthUser);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My Event fetched successfully!",
+    data: result
+  });
+});
+
 const updateEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
 
   const { id } = req.params;
@@ -121,12 +136,12 @@ const leaveEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: R
 const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
   const userId = req.params.id;
   console.log(userId)
-  const result = await EventService.getMyUserJoinEvent(userId )
+  const result = await EventService.getMyUserJoinEvent(userId)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: 'My join Event retrive successfully',
-     data: result
+    data: result
   });
 });
 
@@ -144,7 +159,7 @@ const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }
 //     message: 'My Event retrive successfully',
 //     meta: result.meta,
 //     data: result.data,
-   
+
 //   });
 // });
 
@@ -154,6 +169,7 @@ const getMyUserJoinEvent = catchAsync(async (req: Request & { user?: IAuthUser }
 export const EventController = {
   createEvent,
   getAllEvents,
+  getMyEvents,
   updateEvent,
   getEventById,
   deleteEvent,

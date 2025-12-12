@@ -22,6 +22,7 @@ const cerateUser = async (req: Request) => {
             data: {
                 name: req.body.profile.name,
                 email: req.body.profile.email,
+                contactNumber: req.body.contactNumber,
                 password: hashPassword
             }
         });

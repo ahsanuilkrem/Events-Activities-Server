@@ -10,8 +10,14 @@ const router = express.Router();
 
 router.get(
     "/",
-     auth(Role.ADMIN, Role.HOST, Role.USER),
+    //  auth(Role.ADMIN, Role.HOST, Role.USER),
     EventController.getAllEvents
+)
+
+router.get(
+    '/my-event',
+    auth(Role.HOST),
+   EventController.getMyEvents
 )
 
 router.get("/:id", 

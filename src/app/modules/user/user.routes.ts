@@ -51,7 +51,7 @@ router.patch(
 );
 
 router.patch(
-    '/:id/status',
+    '/status/:id',
     auth(Role.ADMIN),
     validateRequest(UserValidation.updateStatus),
     UserController.changeProfileStatus

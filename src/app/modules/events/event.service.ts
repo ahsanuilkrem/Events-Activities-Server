@@ -97,10 +97,11 @@ const getAllEvents = async (params: any, options: IOptions) => {
     orderBy: {
       [sortBy]: sortOrder
     },
-    include:{
+    include: {
+      host:true,
       participants: true,
       reviews: {
-        select:{
+        select: {
           rating: true
         }
       },
@@ -120,15 +121,78 @@ const getAllEvents = async (params: any, options: IOptions) => {
   };
 }
 
+const getMyEvents = async (
+  filters: any,
+  options: IOptions,
+  user: IAuthUser
+) => {
+  const { limit, page, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, ...filterData } = filters;
+
+  const userData = await prisma.profile.findUniqueOrThrow({
+    where: {
+      email: user?.email
+    }
+  })
+
+  const andConditions = [];
+
+  andConditions.push({
+    AND: [
+      {
+        hostId: userData.id
+      }
+    ]
+  })
+
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map(key => ({
+        [key]: {
+          equals: (filterData as any)[key]
+        }
+      }))
+    })
+  }
+
+  const whereConditions: Prisma.EventWhereInput =
+    andConditions.length > 0 ? { AND: andConditions } : {};
+
+  const result = await prisma.event.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy:
+      options.sortBy && options.sortOrder
+        ? { [options.sortBy]: options.sortOrder }
+        : {
+
+        }
+  });
+  const total = await prisma.event.count({
+    where: whereConditions
+  });
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+    },
+    data: result,
+  };
+};
+
 const updateEvent = async (id: string, req: Request, user: IAuthUser) => {
   const payload = req.body;
 
   // 1️⃣ Get logged-in user info
-  const userInfo = await prisma.user.findUniqueOrThrow({
-    where: {
-      email: user?.email,
-    },
-  });
+  // const userInfo = await prisma.user.findUniqueOrThrow({
+  //   where: {
+  //     email: user?.email,
+  //   },
+  // });
 
   // 2️⃣ Handle image upload if file exists
   const file = req.file;
@@ -148,9 +212,9 @@ const updateEvent = async (id: string, req: Request, user: IAuthUser) => {
   }
 
   // 4️⃣ Authorization: only Host or Admin can update
-  if (user?.role !== "ADMIN" && existingEvent.hostId !== userInfo.id) {
-    throw new ApiError(403, "You are not allowed to update this event");
-  }
+  // if (user?.role !== "ADMIN" && existingEvent.hostId !== userInfo.id) {
+  //   throw new ApiError(403, "You are not allowed to update this event");
+  // }
 
   // 5️⃣ Fix date field if exists in payload
   if (payload.date) {
@@ -170,11 +234,12 @@ const getEventById = async (id: string) => {
   // Find event by ID
   const event = await prisma.event.findUnique({
     where: { id },
-    include: {          
+    include: {
+      host: true,
       participants: true,   // Fetch participants
       reviews: true,        // Fetch event reviews
-      payment:{
-        select:{
+      payment: {
+        select: {
           id: true,
           userId: true,
           eventId: true,
@@ -481,6 +546,7 @@ const getMyUserJoinEvent = async (userId: string) => {
 export const EventService = {
   createEvent,
   getAllEvents,
+  getMyEvents,
   updateEvent,
   getEventById,
   deleteEvent,

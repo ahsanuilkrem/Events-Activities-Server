@@ -52,9 +52,9 @@ model Review {
   rating      Int
   comment     String?
 
-  userId      String?
-  hostId      String?
-  eventId     String?
+  userId      String
+  hostId      String
+  eventId     String
   joinEventId String  @unique
 
   user        Profile  @relation("UserReviews", fields: [userId], references: [id])
