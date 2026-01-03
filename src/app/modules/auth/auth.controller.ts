@@ -3,7 +3,7 @@ import catchAsync from "../../shared/catchAsync";
 import sendResponse from "../../shared/sendResponse";
 import { AuthServices } from "./auth.service";
 import httpStatus from 'http-status';
-import { IAuthUser } from "../../type/role";
+
 
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
@@ -72,18 +72,35 @@ const forgotPassword = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-const resetPassword = catchAsync(async (req: Request, res: Response) => {
-    const token = req.headers.authorization || "";
+const resetPassword = catchAsync(async (req: Request & { user?: any }, res: Response) => {
+  // Extract token from Authorization header (remove "Bearer " prefix)
+  const authHeader = req.headers.authorization;
+  console.log({ authHeader });
+  const token = authHeader ? authHeader.replace('Bearer ', '') : null;
+  const user = req.user; // Will be populated if authenticated via middleware
 
-    await AuthServices.resetPassword(token, req.body);
+  await AuthServices.resetPassword(token, req.body, user);
 
-    sendResponse(res, {
-        statusCode: httpStatus.OK,
-        success: true,
-        message: "Password Reset!",
-        data: null,
-    });
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password Reset!",
+    data: null,
+  });
 });
+
+// const resetPassword = catchAsync(async (req: Request, res: Response) => {
+//     const token = req.headers.authorization || "";
+
+//     await AuthServices.resetPassword(token, req.body);
+
+//     sendResponse(res, {
+//         statusCode: httpStatus.OK,
+//         success: true,
+//         message: "Password Reset!",
+//         data: null,
+//     });
+// });
 
 const getMe = catchAsync(async (req: Request & { user?: any }, res: Response) => {
   const user = req.cookies;

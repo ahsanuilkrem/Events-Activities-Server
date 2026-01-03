@@ -5,5 +5,6 @@ export const profileFilterableFields: string[] = [
     'searchTerm',
     'email',
     'location',
-    "interests"
+    "interests",
+   
 ];

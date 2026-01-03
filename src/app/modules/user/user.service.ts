@@ -106,7 +106,11 @@ const getAllUsers = async (params: any, options: IOptions) => {
         where: whereConditions,
         orderBy: {
             [sortBy]: sortOrder
+        },
+        include:{
+            profile: true,
         }
+        
     });
 
     const total = await prisma.user.count({
@@ -128,18 +132,19 @@ const UpdateMyProfie = async (user: IAuthUser, req: Request) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,
+            status: UserStatus.ACTIVE
         }
     });
     const file = req.file;
     if (file) {
         const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
-        req.body.profilePhoto = uploadToCloudinary?.secure_url;
+        req.body.profileImage = uploadToCloudinary?.secure_url;
     }
 
     let profileInfo;
 
     if (userInfo.role === Role.ADMIN) {
-        profileInfo = await prisma.admin.update({
+        profileInfo = await prisma.profile.update({
             where: {
                 email: userInfo.email
             },
@@ -202,18 +207,13 @@ const getMyProfile = async (user: IAuthUser) => {
     return { ...userInfo, ...profileInfo };
 };
 
-const changeProfileStatus = async (id: string, status: UserStatus) => {
-    const userData = await prisma.user.findUniqueOrThrow({
-        where: {
-            id
-        }
-    });
-
+const changeProfileStatus = async (id: string, payload: string) => {
+    
     const updateUserStatus = await prisma.user.update({
         where: {
             id
         },
-        data: status
+        data:payload
     });
 
     return updateUserStatus;
@@ -229,6 +229,7 @@ export const UserService = {
     changeProfileStatus,
 
 }
+
 
 
 

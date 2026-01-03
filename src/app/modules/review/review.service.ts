@@ -1,10 +1,6 @@
-// import { hasAutoParseableInput } from "openai/lib/parser";
-// import { prisma } from "../../shared/prisma";
+
 import ApiError from "../../errors/ApiError";
 import httpStatus from 'http-status' 
-// import { IPaginationOptions } from "../../interfaces/pagination";
-// import { paginationHelper } from "../../helper/paginationHelper";
-// import { Prisma } from "@prisma/client";
 import { IAuthUser } from "../../type/role";
 import { prisma } from "../../../config/prisma";
 

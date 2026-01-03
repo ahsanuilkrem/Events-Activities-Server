@@ -10,7 +10,6 @@ import  httpStatus  from 'http-status';
 
 const createUser = catchAsync(async (req:Request, res: Response) => {    
     const result = await UserService.cerateUser(req)
-    //  console.log("user", req);
     sendResponse(res, {
         statusCode: 201,
         success: true,
@@ -59,7 +58,6 @@ const UpdateMyProfie = catchAsync(async (req: Request & { user?: IAuthUser }, re
 const getMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
 
     const user = req.user;
-    console.log(user)
     const result = await UserService.getMyProfile(user as IAuthUser);
 
     sendResponse(res, {
@@ -71,10 +69,8 @@ const getMyProfile = catchAsync(async (req: Request & { user?: IAuthUser }, res:
 });
 
 const changeProfileStatus = catchAsync(async (req: Request, res: Response) => {
-
     const { id } = req.params;
     const result = await UserService.changeProfileStatus(id, req.body)
-
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,

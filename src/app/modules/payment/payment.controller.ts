@@ -4,11 +4,12 @@ import catchAsync from "../../shared/catchAsync";
 import { PaymentService } from "./payment.service";
 import sendResponse from "../../shared/sendResponse";
 import { stripe } from "../../helper/stripe";
+import { IAuthUser } from "../../type/role";
 
 
 // const initPayment = catchAsync(async (req: Request, res: Response) => {
-//     const { appointmentId } = req.params;
-//     const result = await PaymentService.initPayment(appointmentId);
+//     const { joinEventId } = req.params;
+//     const result = await PaymentService.initPayment(joinEventId);
 //     sendResponse(res, {
 //         statusCode: httpStatus.OK,
 //         success: true,
@@ -26,6 +27,33 @@ import { stripe } from "../../helper/stripe";
 //         data: result,
 //     });
 // });
+
+const createEventWithPayLater = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;
+
+    const result = await PaymentService.createEventWithPayLater(user as IAuthUser, req.body);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Event join successfully! You can pay later.",
+        data: result
+    })
+});
+
+const initiatePayment = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
+    const user = req.user;
+    const { id } = req.params;
+
+    const result = await PaymentService.initiatePaymentForEvent(id, user as IAuthUser);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Payment session created successfully",
+        data: result
+    })
+})
 
 const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) => {
 
@@ -54,6 +82,8 @@ const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) 
 
 export const PaymentController = {
     // initPayment,
+    createEventWithPayLater,
+    initiatePayment,
     // validatePayment,
     handleStripeWebhookEvent
 }

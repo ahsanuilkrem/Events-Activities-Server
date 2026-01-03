@@ -25,7 +25,7 @@ router.delete("/:id",
     ProfileController.profileDelete   
 );
 
-router.delete("/:id/softDelete", 
+router.delete("/softDelete/:id", 
     auth(Role.HOST, Role.ADMIN, Role.USER),
     ProfileController.softDelete   
 );

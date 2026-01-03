@@ -12,7 +12,6 @@ import { ProfileService } from './profile.service';
 const getAllFromDB = catchAsync(async (req: Request, res: Response) => {
     const filters = pick(req.query, profileFilterableFields);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
-
     const result = await ProfileService.getAllFromDB(filters, options);
 
     sendResponse(res, {

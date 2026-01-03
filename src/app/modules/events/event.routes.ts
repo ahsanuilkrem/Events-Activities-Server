@@ -10,7 +10,6 @@ const router = express.Router();
 
 router.get(
     "/",
-    //  auth(Role.ADMIN, Role.HOST, Role.USER),
     EventController.getAllEvents
 )
 
@@ -51,27 +50,7 @@ router.patch(
 );
 
 
-// All users join event
 
-// router.get("/allJoinedEvent", 
-//     auth(Role.ADMIN, Role.HOST, Role.USER), 
-//     EventController.getAlljoinEvent);
-
-router.post("/:id/join", 
-    auth(Role.USER, Role.HOST, Role.ADMIN),
-    EventController.joinEvent    
-);
-
-router.get(
-    '/:id/my-event',
-    auth(Role.HOST, Role.USER),
-    EventController.getMyUserJoinEvent
-)
-
-router.delete("/:id/leave", 
-    auth(Role.USER, Role.HOST, Role.ADMIN),
-    EventController.leaveEvent    
-); 
 
 
 
