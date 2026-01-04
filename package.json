@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
-    "start": "node ./dist/server.js",
+    "start": "node dist/server.js",
     "db:generate": "prisma generate --schema=./prisma/schema",
     "db:migrate": "prisma migrate --schema=./prisma/schema",
     "db:push": "prisma db push --schema=./prisma/schema",
@@ -53,3 +53,4 @@
     "zod": "^4.1.12"
   }
 }
+
