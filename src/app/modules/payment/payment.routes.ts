@@ -3,6 +3,9 @@ import  express  from 'express';
 import { PaymentController } from './payment.controller';
 import auth from '../../middlewares/auth';
 import { Role } from '@prisma/client';
+import { paymentLimiter } from '../../middlewares/rateLimiter';
+import validateRequest from '../../middlewares/validateRequest';
+import { EventJoinValidation } from './payment.validation';
 
 
 const router = express.Router();
@@ -21,17 +24,16 @@ const router = express.Router();
 router.post(
     '/pay-later',
     auth(Role.USER),
-    // validateRequest(Appoin.createAppointment),
+    validateRequest(EventJoinValidation.createEventJoin),
     PaymentController.createEventWithPayLater
 );
 
 router.post(
     '/:id/initiate-payment',
     auth(Role.USER),
-    // paymentLimiter,
+    paymentLimiter,
     PaymentController.initiatePayment
 );
 
 export const PaymentRoutes = router;
 
-// stripe listen --forward-to localhost:5000/webhook

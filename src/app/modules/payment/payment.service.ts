@@ -1,14 +1,11 @@
 import Stripe from 'stripe';
 import { prisma } from '../../../config/prisma';
-import { PaymentStatus } from '@prisma/client';
+import { EventStatus, PaymentStatus } from '@prisma/client';
 // import { SSLService } from '../SSL/ssl.service';
 import { IAuthUser } from '../../type/role';
 import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
 import { stripe } from '../../helper/stripe';
-
-
-
 
 
 // const initPayment = async (joinEventId: string) => {
@@ -158,13 +155,14 @@ const initiatePaymentForEvent = async (joinEventId: string, user: IAuthUser) => 
         throw new ApiError(httpStatus.BAD_REQUEST, "Event not found or unauthorized");
     }
 
-    if (event.status !== PaymentStatus.SUCCESS) {
+     if (event.event.status === EventStatus.CANCELLED) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "Cannot pay for cancelled Event");
+    }
+
+    if (event.payment?.status === PaymentStatus.SUCCESS) {
         throw new ApiError(httpStatus.BAD_REQUEST, "Payment already completed for this Event");
     }
 
-    // if (event.status === PaymentStatus.FAILED) {
-    //     throw new ApiError(httpStatus.BAD_REQUEST, "Cannot pay for cancelled Event");
-    // }
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
@@ -188,9 +186,9 @@ const initiatePaymentForEvent = async (joinEventId: string, user: IAuthUser) => 
             paymentId: event.payment!.id
         },
         success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment/success`,
-        cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/my-appointments`,
+        cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/my-event`,
     });
-
+//    console.log("session", session)
     return { paymentUrl: session.url };
 };
 

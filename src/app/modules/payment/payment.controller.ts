@@ -5,6 +5,7 @@ import { PaymentService } from "./payment.service";
 import sendResponse from "../../shared/sendResponse";
 import { stripe } from "../../helper/stripe";
 import { IAuthUser } from "../../type/role";
+import config from "../../../config";
 
 
 // const initPayment = catchAsync(async (req: Request, res: Response) => {
@@ -58,7 +59,8 @@ const initiatePayment = catchAsync(async (req: Request & { user?: IAuthUser }, r
 const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) => {
 
     const sig = req.headers["stripe-signature"] as string;
-    const webhookSecret = "whsec_b4c9c68c597866b96e7f78e4e7db5137ed2f3b8a0668d1257d8096ac3426bcad"
+    const webhookSecret = config.stripeWebhookSecret as string;
+    // const webhookSecret = "whsec_b4c9c68c597866b96e7f78e4e7db5137ed2f3b8a0668d1257d8096ac3426bcad"
 
     let event;
     try {

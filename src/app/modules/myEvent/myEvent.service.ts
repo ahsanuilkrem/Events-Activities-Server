@@ -24,7 +24,7 @@ const joinEvent = async (eventId: string, user: IAuthUser) => {
   }
   // console.log("userInfo.id:", userInfo.id);
   // console.log("eventId:", event.id);
-  
+
   // 2. Check if user already joined
   const alreadyJoined = event.participants.some(p => p.userId === userInfo.id);
   if (alreadyJoined) {
@@ -46,6 +46,7 @@ const joinEvent = async (eventId: string, user: IAuthUser) => {
       include: {
         user: true,
         event: true,
+        payment:true,
 
       }
 
@@ -95,10 +96,10 @@ const joinEvent = async (eventId: string, user: IAuthUser) => {
         joinEventId: participant.id,
         paymentId: paymentData.id,
       },
-      success_url: `https://www.programming-hero.com/`,
-      cancel_url: `https://next.programming-hero.com/`,
+      success_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment/success`,
+      cancel_url: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/my-event`,
     });
-    console.log("session", session)
+    // console.log("session", session)
     // return participant;
     return { paymentUrl: session.url };
   })
@@ -212,7 +213,7 @@ const getMyEventById = async (id: string) => {
     where: { id },
     include: {
       event: true,
-      review: true,       
+      review: true,
       payment: {
         select: {
           id: true,
@@ -273,15 +274,15 @@ const getMyUserJoinEvent = async (user: IAuthUser, filters: any, options: IOptio
     orderBy: options.sortBy && options.sortOrder
       ? { [options.sortBy]: options.sortOrder }
       : { createdAt: 'desc' },
-      include: {
-         user: true,
-         event: true,
-      }
-      
-       
+    include: {
+      user: true,
+      event: true,
+    }
+
+
     // include: user?.role === Role.USER
     //   ? { event: true } : { user: true },
-   
+
   });
 
   const total = await prisma.eventParticipant.count({

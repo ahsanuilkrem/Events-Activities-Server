@@ -8,6 +8,7 @@ export default {
     port: process.env.PORT,
     database_url: process.env.DATABASE_URL,
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
     salt_round: process.env.SALT_ROUND,
       jwt: {
         jwt_secret: process.env.JWT_SECRET,
