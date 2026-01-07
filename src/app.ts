@@ -23,7 +23,7 @@ app.post(
 app.use(cors({
     origin: 'https://event-activites-client.vercel.app',
     credentials: true
-}));
+})),
 app.use(express.json()); // For JSON requests
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true })); // For form-data
