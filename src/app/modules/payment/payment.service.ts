@@ -1,92 +1,14 @@
 import Stripe from 'stripe';
 import { prisma } from '../../../config/prisma';
 import { EventStatus, PaymentStatus } from '@prisma/client';
-// import { SSLService } from '../SSL/ssl.service';
 import { IAuthUser } from '../../type/role';
 import ApiError from '../../errors/ApiError';
 import httpStatus from 'http-status';
 import { stripe } from '../../helper/stripe';
 
 
-// const initPayment = async (joinEventId: string) => {
-//     const paymentData = await prisma.payment.findFirstOrThrow({
-//         where: {
-//             joinEventId
-//         },
-//         include: {
-//            joinEvent: {
-//                 include: {
-//                     user: true
-//                 }
-//             }
-//         }
-//     });
 
-//     const initPaymentData = {
-//         amount: paymentData.amount,
-//         transactionId: paymentData.transactionId,
-//         name: paymentData.joinEvent.user.name,
-//         email: paymentData.joinEvent.user.email,
-//         address: paymentData.joinEvent.user.location,
-//         // phoneNumber: paymentData.joinEvent.user.
-//     }
-
-//     const result = await SSLService.initPayment(initPaymentData);
-//     return {
-//         paymentUrl: result.GatewayPageURL
-//     };
-
-// };
-
-// ssl commerz ipn listener query
-// amount=1150.00&bank_tran_id=151114130739MqCBNx5&card_brand=VISA&card_issuer=BRAC+BANK%2C+LTD.&card_issuer_country=Bangladesh&card_issuer_country_code=BD&card_no=432149XXXXXX0667&card_type=VISA-Brac+bank¤cy=BDT&status=VALID&store_amount=1104.00&store_id=progr6606bdd704623&tran_date=2015-11-14+13%3A07%3A12&tran_id=5646dd9d4b484&val_id=151114130742Bj94IBUk4uE5GRj&verify_sign=490d86b8ac5faa016f695b60972a7fac&verify_key=amount%2Cbank_tran_id%2Ccard_brand%2Ccard_issuer%2Ccard_issuer_country%2Ccard_issuer_country_code%2Ccard_no%2Ccard_type%2Ccurrency%2Cstatus%2Cstore_amount%2Cstore_id%2Ctran_date%2Ctran_id%2Cval_id
-
-// const validatePayment = async (payload: any) => {
-//     // if (!payload || !payload.status || !(payload.status === 'VALID')) {
-//     //     return {
-//     //         message: "Invalid Payment!"
-//     //     }
-//     // }
-
-//     // const response = await SSLService.validatePayment(payload);
-
-//     // if (response?.status !== 'VALID') {
-//     //     return {
-//     //         message: "Payment Failed!"
-//     //     }
-//     // }
-
-//     const response = payload;
-
-//     await prisma.$transaction(async (tnx) => {
-//         const updatedPaymentData = await tnx.payment.update({
-//             where: {
-//                 transactionId: response.tran_id
-//             },
-//             data: {
-//                 status: PaymentStatus.SUCCESS ,
-//                 paymentGatewayData: response
-//             }
-//         });
-
-//         await tnx.eventParticipant.update({
-//             where: {
-//                 id: updatedPaymentData.status
-//             },
-//             data: {
-//                 status: PaymentStatus.SUCCESS
-//             }
-//         })
-//     });
-
-//     return {
-//         message: "Payment success!"
-//     }
-
-// }
-
-
-const createEventWithPayLater = async (user: IAuthUser, payload: any) => {
+const createEventWithPayLater = async (user: IAuthUser, eventId: string) => {
     const userData = await prisma.profile.findUniqueOrThrow({
         where: {
             email: user?.email
@@ -95,7 +17,7 @@ const createEventWithPayLater = async (user: IAuthUser, payload: any) => {
 
     const eventData = await prisma.event.findUniqueOrThrow({
         where: {
-            id: payload.id,
+            id: eventId,
           
         }
     });
@@ -230,9 +152,7 @@ const handleStripeWebhookEvent = async (event: Stripe.Event) => {
 };
 
 export const PaymentService = {
-    //  initPayment,
     createEventWithPayLater,
     initiatePaymentForEvent,
-    // validatePayment,
     handleStripeWebhookEvent
 }

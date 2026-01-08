@@ -10,20 +10,9 @@ import { EventJoinValidation } from './payment.validation';
 
 const router = express.Router();
 
-// router.get(
-//     '/ipn',
-//     // PaymentController.validatePayment
-// )
-
-// router.post(
-//     '/init-payment/:joinEventId',
-//     PaymentController.initPayment
-// )
-
-
 router.post(
     '/pay-later',
-    auth(Role.USER),
+    auth(Role.USER, Role.ADMIN),
     validateRequest(EventJoinValidation.createEventJoin),
     PaymentController.createEventWithPayLater
 );

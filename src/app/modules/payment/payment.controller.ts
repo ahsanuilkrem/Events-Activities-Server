@@ -8,31 +8,10 @@ import { IAuthUser } from "../../type/role";
 import config from "../../../config";
 
 
-// const initPayment = catchAsync(async (req: Request, res: Response) => {
-//     const { joinEventId } = req.params;
-//     const result = await PaymentService.initPayment(joinEventId);
-//     sendResponse(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: 'Payment initiate successfully',
-//         data: result,
-//     });
-// });
-
-// const validatePayment = catchAsync(async (req: Request, res: Response) => {
-//     const result = await PaymentService.validatePayment(req.query);
-//     sendResponse(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: 'Payment validate successfully',
-//         data: result,
-//     });
-// });
-
 const createEventWithPayLater = catchAsync(async (req: Request & { user?: IAuthUser }, res: Response) => {
     const user = req.user;
-
-    const result = await PaymentService.createEventWithPayLater(user as IAuthUser, req.body);
+    const { eventId } = req.body;
+    const result = await PaymentService.createEventWithPayLater(user as IAuthUser, eventId);
 
     sendResponse(res, {
         statusCode: httpStatus.OK,
@@ -83,9 +62,7 @@ const handleStripeWebhookEvent = catchAsync(async (req: Request, res: Response) 
 });
 
 export const PaymentController = {
-    // initPayment,
     createEventWithPayLater,
     initiatePayment,
-    // validatePayment,
     handleStripeWebhookEvent
 }

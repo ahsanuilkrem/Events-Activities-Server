@@ -279,10 +279,6 @@ const getMyUserJoinEvent = async (user: IAuthUser, filters: any, options: IOptio
       event: true,
     }
 
-
-    // include: user?.role === Role.USER
-    //   ? { event: true } : { user: true },
-
   });
 
   const total = await prisma.eventParticipant.count({

@@ -6,10 +6,6 @@ import { EventController } from './myEvent.controller';
 
 const router = express.Router();
 
-// router.get("/allJoinedEvent", 
-//     auth(Role.ADMIN, Role.HOST, Role.USER), 
-//     EventController.getAlljoinEvent);
-
 router.post("/", 
     auth(Role.USER, Role.HOST, Role.ADMIN),
     EventController.joinEvent    
